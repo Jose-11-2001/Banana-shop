@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Order Status Update</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .status-approved { color: #22c55e; font-weight: bold; }
+        .status-rejected { color: #ef4444; font-weight: bold; }
+        .reason { background: #fee2e2; padding: 10px; border-left: 4px solid #ef4444; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header" th:classappend="${status == 'APPROVED'} ? 'status-approved' : 'status-rejected'">
+            <h1 th:text="${status == 'APPROVED'} ? 'Order Approved! 🎉' : 'Order Update'">Order Update</h1>
+        </div>
+        <div class="content">
+            <h2>Hello <span th:text="${customerName}">Customer</span>,</h2>
+            
+            <div th:if="${status == 'APPROVED'}">
+                <p>Great news! Your order #<span th:text="${orderId}">12345</span> has been <strong>approved</strong>!</p>
+                <p>We're now processing your order and will update you when it's shipped.</p>
+            </div>
+            
+            <div th:if="${status == 'REJECTED'}">
+                <p>We regret to inform you that your order #<span th:text="${orderId}">12345</span> has been <strong>rejected</strong>.</p>
+                <div class="reason">
+                    <strong>Reason:</strong>
+                    <p th:text="${rejectionReason}">Reason here</p>
+                </div>
+                <p>Please contact support if you have any questions.</p>
+            </div>
+            
+            <a href="http://localhost:3000/customer/orders" class="button">View My Orders</a>
+        </div>
+    </div>
+</body>
+</html>

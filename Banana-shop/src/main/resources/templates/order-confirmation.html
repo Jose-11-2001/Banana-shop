@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Order Confirmation</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: #22c55e; color: white; padding: 20px; text-align: center; }
+        .order-details { background: #f9fafb; padding: 20px; margin: 20px 0; border-radius: 5px; }
+        .status-pending { color: #eab308; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Order Confirmation</h1>
+        </div>
+        <div class="content">
+            <h2>Thank you for your order, <span th:text="${customerName}">Customer</span>!</h2>
+            <div class="order-details">
+                <p><strong>Order ID:</strong> #<span th:text="${orderId}">12345</span></p>
+                <p><strong>Order Date:</strong> <span th:text="${orderDate}">2024-01-01</span></p>
+                <p><strong>Total Amount:</strong> $<span th:text="${totalAmount}">99.99</span></p>
+                <p><strong>Status:</strong> <span class="status-pending">Pending</span></p>
+            </div>
+            <p>We'll notify you once your order is approved. You can track your order status in your account.</p>
+            <a href="http://localhost:3000/customer/orders" class="button">Track Order</a>
+        </div>
+    </div>
+</body>
+</html>

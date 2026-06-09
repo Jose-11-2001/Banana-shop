@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Welcome to Banana Shop</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: linear-gradient(135deg, #22c55e, #16a34a); color: white; padding: 20px; text-align: center; }
+        .content { padding: 20px; background: #f9fafb; }
+        .footer { text-align: center; padding: 20px; font-size: 12px; color: #6b7280; }
+        .button { display: inline-block; padding: 10px 20px; background: #22c55e; color: white; text-decoration: none; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🍌 Welcome to Banana Shop!</h1>
+        </div>
+        <div class="content">
+            <h2>Hello <span th:text="${name}">Customer</span>!</h2>
+            <p>Thank you for registering with Banana Shop. We're excited to have you on board!</p>
+            <p>With Banana Shop, you can:</p>
+            <ul>
+                <li>Browse our fresh farm produce</li>
+                <li>Place orders online</li>
+                <li>Get real-time order updates</li>
+                <li>Earn loyalty points</li>
+            </ul>
+            <p>Start shopping now and experience the freshest bananas and farm produce!</p>
+            <a href="http://localhost:3000/products" class="button">Start Shopping</a>
+        </div>
+        <div class="footer">
+            <p>&copy; 2024 Banana Shop. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>
