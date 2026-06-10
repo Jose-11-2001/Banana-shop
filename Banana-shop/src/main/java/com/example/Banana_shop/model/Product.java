@@ -1,13 +1,11 @@
 package com.bananashop.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
 @Table(name = "products")
-@Data
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,14 +31,9 @@ public class Product {
     
     @Column(name = "created_at")
     private LocalDateTime createdAt;
-
-    @Column(name = "stock")
+    
     private Integer stock = 0;
-
-    @Column(name = "average_rating")
     private Double averageRating = 0.0;
-
-    @Column(name = "total_reviews")
     private Long totalReviews = 0L;
     
     @PrePersist
@@ -51,4 +44,28 @@ public class Product {
     public enum Category {
         BANANA, OTHER_FARM
     }
+    
+    // Getters and Setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
+    public Double getPrice() { return price; }
+    public void setPrice(Double price) { this.price = price; }
+    public Category getCategory() { return category; }
+    public void setCategory(Category category) { this.category = category; }
+    public List<ProductImage> getImages() { return images; }
+    public void setImages(List<ProductImage> images) { this.images = images; }
+    public List<Review> getReviews() { return reviews; }
+    public void setReviews(List<Review> reviews) { this.reviews = reviews; }
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    public Integer getStock() { return stock; }
+    public void setStock(Integer stock) { this.stock = stock; }
+    public Double getAverageRating() { return averageRating; }
+    public void setAverageRating(Double averageRating) { this.averageRating = averageRating; }
+    public Long getTotalReviews() { return totalReviews; }
+    public void setTotalReviews(Long totalReviews) { this.totalReviews = totalReviews; }
 }
