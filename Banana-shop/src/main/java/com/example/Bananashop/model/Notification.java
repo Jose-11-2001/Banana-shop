@@ -17,6 +17,10 @@ public class Notification {
     @Column(nullable = false)
     private String message;
     
+    private String type; // ORDER_UPDATE, NEW_ORDER, REVIEW_RESPONSE
+    
+    private String referenceId; // Order ID or Review ID
+    
     @Column(name = "is_read")
     private Boolean isRead = false;
     
@@ -35,6 +39,10 @@ public class Notification {
     public void setUser(User user) { this.user = user; }
     public String getMessage() { return message; }
     public void setMessage(String message) { this.message = message; }
+    public String getType() { return type; }
+    public void setType(String type) { this.type = type; }
+    public String getReferenceId() { return referenceId; }
+    public void setReferenceId(String referenceId) { this.referenceId = referenceId; }
     public Boolean getIsRead() { return isRead; }
     public void setIsRead(Boolean isRead) { this.isRead = isRead; }
     public LocalDateTime getCreatedAt() { return createdAt; }

@@ -1,3 +1,4 @@
+
 package com.example.Bananashop.service;
 
 import jakarta.mail.MessagingException;
@@ -21,6 +22,9 @@ public class EmailService {
     
     @Value("${spring.mail.username}")
     private String fromEmail;
+    
+    @Value("${app.frontend.url:http://localhost:3000}")
+    private String frontendUrl;
     
     // Send simple email
     public void sendEmail(String to, String subject, String content) {
@@ -88,12 +92,13 @@ public class EmailService {
         sendHtmlEmail(to, "Welcome to Banana Shop!", "welcome", context);
     }
     
-    // Password reset email
+    // ✅ Password reset email - FIXED version
     public void sendPasswordResetEmail(String to, String resetToken) {
         Context context = new Context();
         context.setVariable("resetToken", resetToken);
-        context.setVariable("resetLink", "http://localhost:3000/reset-password?token=" + resetToken);
+        context.setVariable("resetLink", frontendUrl + "/auth/reset-password?token=" + resetToken);
+        context.setVariable("name", to.split("@")[0]);
         
-        sendHtmlEmail(to, "Password Reset Request", "password-reset", context);
+        sendHtmlEmail(to, "Reset Your Password - Banana Shop", "password-reset", context);
     }
 }

@@ -47,11 +47,13 @@
             <artifactId>spring-boot-starter-websocket</artifactId>
         </dependency>
         
+        <!-- Email - KEEP ONLY ONE -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-mail</artifactId>
         </dependency>
         
+        <!-- Thymeleaf for email templates - KEEP ONLY ONE -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
@@ -63,27 +65,20 @@
             <scope>runtime</scope>
             <optional>true</optional>
         </dependency>
+        
         <!-- Swagger/OpenAPI -->
-<dependency>
-    <groupId>org.springdoc</groupId>
-    <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-    <version>2.2.0</version>
-</dependency>
-
-<!-- For Spring Security integration (optional) -->
-<dependency>
-    <groupId>org.springdoc</groupId>
-    <artifactId>springdoc-openapi-starter-webmvc-api</artifactId>
-    <version>2.2.0</version>
-</dependency>
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>2.2.0</version>
+        </dependency>
         
         <!-- Database -->
         <dependency>
-    <groupId>org.postgresql</groupId>
-    <artifactId>postgresql</artifactId>
-    <scope>runtime</scope>
-</dependency>
-
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
+        </dependency>
         
         <!-- JWT -->
         <dependency>

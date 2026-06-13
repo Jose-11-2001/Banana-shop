@@ -1,3 +1,4 @@
+
 package com.example.Bananashop.service;
 
 import com.example.Bananashop.dto.OrderDTO;
@@ -82,19 +83,17 @@ public class OrderService {
         Order savedOrder = orderRepository.save(order);
         
         // Send notification to admin via WebSocket
-        Map<String, Object> notification = new HashMap<>();
-        notification.put("type", "NEW_ORDER");
-        notification.put("orderId", savedOrder.getId());
-        notification.put("customerName", customer.getName());
-        notification.put("totalAmount", totalAmount);
-        notification.put("timestamp", LocalDateTime.now());
+        Map<String, Object> adminNotification = new HashMap<>();
+        adminNotification.put("type", "NEW_ORDER");
+        adminNotification.put("orderId", savedOrder.getId());
+        adminNotification.put("customerName", customer.getName());
+        adminNotification.put("totalAmount", totalAmount);
+        adminNotification.put("timestamp", LocalDateTime.now());
         
-        messagingTemplate.convertAndSend("/topic/admin/orders", notification);
+        messagingTemplate.convertAndSend("/topic/admin/orders", adminNotification);
         
-        // Create notification in database for admin
-        notificationService.createNotificationForAdmins(
-            "New order #" + savedOrder.getId() + " from " + customer.getName()
-        );
+        // ✅ Notify all admins about new order (database notification + email)
+        notificationService.notifyAdminsNewOrder(savedOrder);
         
         return savedOrder;
     }
@@ -170,11 +169,8 @@ public class OrderService {
         
         emailService.sendEmail(order.getCustomerEmail(), subject, content);
         
-        // Create in-app notification
-        notificationService.createNotification(
-            order.getCustomer(),
-            "Order #" + orderId + " is now " + status.toString().toLowerCase()
-        );
+        // ✅ Notify customer about order status change (database notification)
+        notificationService.notifyCustomerOrderStatus(updatedOrder, status.toString(), rejectionReason);
         
         return updatedOrder;
     }

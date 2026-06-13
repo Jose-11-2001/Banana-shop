@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
@@ -24,8 +25,14 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
     
+    @Autowired
+    private EmailService emailService;
+    
     @Value("${upload.path}")
     private String uploadPath;
+    
+    @Value("${app.frontend.url:http://localhost:3000}")
+    private String frontendUrl;
     
     public User findByEmail(String email) {
         return userRepository.findByEmail(email)
@@ -86,5 +93,37 @@ public class UserService {
     
     public long getTotalUsers() {
         return userRepository.count();
+    }
+    
+    // ✅ Forgot Password - Send reset email
+    @Transactional
+    public void forgotPassword(String email) {
+        User user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
+        
+        // Generate reset token
+        String resetToken = UUID.randomUUID().toString();
+        user.setResetToken(resetToken);
+        user.setResetTokenExpiry(LocalDateTime.now().plusHours(1));
+        userRepository.save(user);
+        
+        // Send email using EmailService
+        emailService.sendPasswordResetEmail(user.getEmail(), resetToken);
+    }
+    
+    // ✅ Reset Password - Set new password
+    @Transactional
+    public void resetPassword(String token, String newPassword) {
+        User user = userRepository.findByResetToken(token)
+            .orElseThrow(() -> new RuntimeException("Invalid or expired reset token"));
+        
+        if (user.getResetTokenExpiry().isBefore(LocalDateTime.now())) {
+            throw new RuntimeException("Reset token has expired");
+        }
+        
+        user.setPassword(passwordEncoder.encode(newPassword));
+        user.setResetToken(null);
+        user.setResetTokenExpiry(null);
+        userRepository.save(user);
     }
 }

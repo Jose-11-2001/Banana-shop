@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map; 
 
 @RestController
 @RequestMapping("/api")
@@ -64,4 +66,10 @@ public class ProductController {
         productService.deleteProductImage(imageId);
         return ResponseEntity.ok().build();
     }
+    @GetMapping("/admin/products/stats")
+    public ResponseEntity<?> getProductStats() {
+    Map<String, Object> stats = new HashMap<>();
+    stats.put("totalProducts", productService.getTotalProducts());
+    return ResponseEntity.ok(stats);
+}
 }

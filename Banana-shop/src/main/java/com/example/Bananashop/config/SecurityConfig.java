@@ -24,27 +24,17 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            // Disable CSRF for stateless API
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(csrf -> csrf.disable())
-            
-            // Disable form login and HTTP basic (using JWT instead)
             .formLogin(form -> form.disable())
             .httpBasic(basic -> basic.disable())
-            
-            // Configure CORS
-            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            
-            // Configure authorization rules
             .authorizeHttpRequests(auth -> auth
-                // Public endpoints - no authentication required
                 .requestMatchers(
-                    // Authentication endpoints
                     "/api/auth/**",
-                    // Public product access
                     "/api/products/**",
-                    // WebSocket
+                    "/api/products",
+                    "/api/notifications/**",
                     "/ws/**",
-                    // Swagger UI and OpenAPI documentation
                     "/swagger-ui/**",
                     "/swagger-ui.html",
                     "/api-docs/**",
@@ -52,10 +42,9 @@ public class SecurityConfig {
                     "/swagger-resources/**",
                     "/webjars/**"
                 ).permitAll()
-                // All other endpoints require authentication
+                .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
             )
-            // Stateless session (no session creation)
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         
         return http.build();
@@ -70,14 +59,16 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("*")); // Allow all origins (for development)
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+        configuration.setAllowedOriginPatterns(Arrays.asList("http://localhost:3000"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setExposedHeaders(List.of("Authorization"));
         configuration.setAllowCredentials(true);
+        configuration.setMaxAge(3600L);
         
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
