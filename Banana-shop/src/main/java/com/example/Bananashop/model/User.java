@@ -19,6 +19,7 @@ public class User {
     
     @Column(nullable = false)
     private String name;
+    
     @Column(name = "reset_token")
     private String resetToken;
 

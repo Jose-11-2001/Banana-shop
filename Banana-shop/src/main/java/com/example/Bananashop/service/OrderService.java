@@ -92,7 +92,7 @@ public class OrderService {
         
         messagingTemplate.convertAndSend("/topic/admin/orders", adminNotification);
         
-        // ✅ Notify all admins about new order (database notification + email)
+        //  Notify all admins about new order (database notification + email)
         notificationService.notifyAdminsNewOrder(savedOrder);
         
         return savedOrder;
@@ -169,7 +169,7 @@ public class OrderService {
         
         emailService.sendEmail(order.getCustomerEmail(), subject, content);
         
-        // ✅ Notify customer about order status change (database notification)
+        //  Notify customer about order status change (database notification)
         notificationService.notifyCustomerOrderStatus(updatedOrder, status.toString(), rejectionReason);
         
         return updatedOrder;

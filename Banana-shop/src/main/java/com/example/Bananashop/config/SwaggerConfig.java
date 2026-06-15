@@ -24,7 +24,7 @@ public class SwaggerConfig {
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
             .info(new Info()
-                .title("🍌 Banana Shop API")
+                .title("Banana Shop API")
                 .version("1.0.0")
                 .description("""
                     ## Banana Shop E-Commerce Platform API

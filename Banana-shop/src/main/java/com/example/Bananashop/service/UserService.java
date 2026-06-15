@@ -1,4 +1,3 @@
-
 package com.example.Bananashop.service;
 
 import com.example.Bananashop.model.User;
@@ -46,7 +45,13 @@ public class UserService {
         }
         
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setRole(User.Role.CUSTOMER);
+        
+        // Auto-set admin role for specific email
+        if (user.getEmail().equals("adminbananashop@gmail.com")) {
+            user.setRole(User.Role.ADMIN);
+        } else if (user.getRole() == null) {
+            user.setRole(User.Role.CUSTOMER);
+        }
         
         return userRepository.save(user);
     }
@@ -95,7 +100,7 @@ public class UserService {
         return userRepository.count();
     }
     
-    // ✅ Forgot Password - Send reset email
+    // Forgot Password - Send reset email
     @Transactional
     public void forgotPassword(String email) {
         User user = userRepository.findByEmail(email)
@@ -111,7 +116,7 @@ public class UserService {
         emailService.sendPasswordResetEmail(user.getEmail(), resetToken);
     }
     
-    // ✅ Reset Password - Set new password
+    // Reset Password - Set new password
     @Transactional
     public void resetPassword(String token, String newPassword) {
         User user = userRepository.findByResetToken(token)

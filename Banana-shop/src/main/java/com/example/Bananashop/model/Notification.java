@@ -17,9 +17,9 @@ public class Notification {
     @Column(nullable = false)
     private String message;
     
-    private String type; // ORDER_UPDATE, NEW_ORDER, REVIEW_RESPONSE
+    private String type;
     
-    private String referenceId; // Order ID or Review ID
+    private String referenceId; 
     
     @Column(name = "is_read")
     private Boolean isRead = false;

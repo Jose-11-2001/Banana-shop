@@ -85,11 +85,11 @@ public class NotificationService {
         String type = "ORDER_UPDATE";
         
         if (status.equals("APPROVED")) {
-            message = "✅ Your order #" + order.getId() + " has been approved! Your items will be delivered soon.";
+            message = "Your order #" + order.getId() + " has been approved! Your items will be delivered soon.";
         } else if (status.equals("REJECTED")) {
-            message = "❌ Your order #" + order.getId() + " has been rejected. Reason: " + rejectionReason;
+            message = "Your order #" + order.getId() + " has been rejected. Reason: " + rejectionReason;
         } else {
-            message = "📦 Your order #" + order.getId() + " is now " + status.toLowerCase();
+            message = "Your order #" + order.getId() + " is now " + status.toLowerCase();
         }
         
         createNotification(order.getCustomer(), message, type, String.valueOf(order.getId()));

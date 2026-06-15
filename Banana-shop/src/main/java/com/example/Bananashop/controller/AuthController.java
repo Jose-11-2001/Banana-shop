@@ -53,9 +53,9 @@ public class AuthController {
                         "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
                         "user": {
                             "id": 1,
-                            "email": "user@example.com",
-                            "name": "John Doe",
-                            "role": "CUSTOMER",
+                            "email": "adminbananashop@gmail.com",
+                            "name": "Admin User",
+                            "role": "ADMIN",
                             "createdAt": "2026-01-01T00:00:00"
                         }
                     }
@@ -92,6 +92,9 @@ public class AuthController {
         String token = jwtService.generateToken(request.getEmail());
         User user = userService.findByEmail(request.getEmail());
         
+        //  Add debug logging to see what role is being returned
+        System.out.println(" User logged in: " + user.getEmail() + " with role: " + user.getRole());
+        
         return ResponseEntity.ok(new AuthResponse(token, user));
     }
     
@@ -112,10 +115,9 @@ public class AuthController {
                     value = """
                     {
                         "id": 1,
-                        "email": "newuser@example.com",
-                        "name": "New User",
-                        "role": "CUSTOMER",
-                        "location": "New York",
+                        "email": "adminbananashop@gmail.com",
+                        "name": "Admin User",
+                        "role": "ADMIN",
                         "createdAt": "2026-01-01T00:00:00"
                     }
                     """
@@ -139,7 +141,13 @@ public class AuthController {
         )
     })
     public ResponseEntity<?> register(@RequestBody User user) {
+        // Log registration
+        System.out.println(" Registering user: " + user.getEmail() + " with role: " + user.getRole());
+        
         User registeredUser = userService.register(user);
+        
+        System.out.println(" User registered: " + registeredUser.getEmail() + " with role: " + registeredUser.getRole());
+        
         return ResponseEntity.ok(registeredUser);
     }
 }

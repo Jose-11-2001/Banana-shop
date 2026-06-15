@@ -29,7 +29,7 @@ public class NotificationController {
     @GetMapping("/notifications")
     public ResponseEntity<List<Notification>> getUserNotifications(
             @AuthenticationPrincipal UserDetails userDetails) {
-        // ✅ Add null check to prevent NullPointerException
+        //  Add null check to prevent NullPointerException
         if (userDetails == null) {
             return ResponseEntity.ok(new ArrayList<>());
         }
@@ -41,7 +41,7 @@ public class NotificationController {
     @GetMapping("/notifications/unread-count")
     public ResponseEntity<Map<String, Long>> getUnreadCount(
             @AuthenticationPrincipal UserDetails userDetails) {
-        // ✅ Add null check
+        //  Add null check
         if (userDetails == null) {
             Map<String, Long> response = new HashMap<>();
             response.put("count", 0L);
@@ -62,7 +62,7 @@ public class NotificationController {
     
     @PutMapping("/notifications/read-all")
     public ResponseEntity<?> markAllAsRead(@AuthenticationPrincipal UserDetails userDetails) {
-        // ✅ Add null check
+        //  Add null check
         if (userDetails == null) {
             return ResponseEntity.ok().build();
         }

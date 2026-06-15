@@ -92,13 +92,16 @@ public class EmailService {
         sendHtmlEmail(to, "Welcome to Banana Shop!", "welcome", context);
     }
     
-    // ✅ Password reset email - FIXED version
+    //  Password reset email - FIXED version
+
     public void sendPasswordResetEmail(String to, String resetToken) {
-        Context context = new Context();
-        context.setVariable("resetToken", resetToken);
-        context.setVariable("resetLink", frontendUrl + "/auth/reset-password?token=" + resetToken);
-        context.setVariable("name", to.split("@")[0]);
-        
-        sendHtmlEmail(to, "Reset Your Password - Banana Shop", "password-reset", context);
-    }
+    String resetLink = frontendUrl + "/auth/reset-password?token=" + resetToken;
+    String subject = "Reset Your Password - Banana Shop";
+    
+    Context context = new Context();
+    context.setVariable("resetLink", resetLink);
+    context.setVariable("name", to.split("@")[0]);
+    
+    sendHtmlEmail(to, subject, "password-reset", context);
+}
 }
