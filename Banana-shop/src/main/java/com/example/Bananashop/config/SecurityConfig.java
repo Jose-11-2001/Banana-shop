@@ -1,6 +1,5 @@
 package com.example.Bananashop.config;
 
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -40,16 +39,6 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .formLogin(form -> form.disable())
             .httpBasic(basic -> basic.disable())
-            
-            // Add custom authentication entry point for 401 instead of 403
-            .exceptionHandling(exceptions -> exceptions
-                .authenticationEntryPoint((request, response, authException) -> {
-                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                    response.setContentType("application/json");
-                    response.getWriter().write("{\"error\": \"Authentication required\", \"message\": \"" + authException.getMessage() + "\"}");
-                })
-            )
-            
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(
                     "/api/auth/**",

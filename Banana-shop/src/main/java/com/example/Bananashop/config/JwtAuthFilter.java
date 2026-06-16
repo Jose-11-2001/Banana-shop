@@ -31,58 +31,77 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         
         final String authHeader = request.getHeader("Authorization");
-        final String jwt;
-        final String email;
         
-        // Skip filtering for public endpoints
+        // ✅ Get the request path
         String path = request.getServletPath();
-        if (path.startsWith("/api/auth/") || 
+        String method = request.getMethod();
+        
+        System.out.println("🔍 JWT Filter - Path: " + path + ", Method: " + method);
+        
+        // ✅ SKIP JWT FILTER FOR PUBLIC ENDPOINTS
+        if (path.equals("/api/auth/login") || 
+            path.equals("/api/auth/register") ||
+            path.startsWith("/api/auth/") || 
             path.startsWith("/api/products") || 
             path.startsWith("/swagger-ui") || 
             path.startsWith("/api-docs") ||
-            path.startsWith("/ws/")) {
+            path.startsWith("/v3/api-docs") ||
+            path.startsWith("/ws/") ||
+            path.startsWith("/api/notifications/") ||
+            path.equals("/api/user/forgot-password") ||
+            path.equals("/api/user/reset-password")) {
+            
+            System.out.println("🔓 Public endpoint: " + path + " - Skipping JWT filter");
             filterChain.doFilter(request, response);
             return;
         }
         
+        // ✅ Check for Authorization header
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            System.out.println("⚠️ No Bearer token found for: " + path);
             filterChain.doFilter(request, response);
             return;
         }
         
-        jwt = authHeader.substring(7);
+        final String jwt = authHeader.substring(7);
+        System.out.println("🔐 Validating token for: " + path);
         
         try {
-            email = jwtService.extractEmail(jwt);
+            final String email = jwtService.extractEmail(jwt);
+            System.out.println("📧 Extracted email: " + email);
             
             if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+                System.out.println("👤 Loaded user: " + userDetails.getUsername());
+                System.out.println("👤 User authorities: " + userDetails.getAuthorities());
                 
-                if (jwtService.validateToken(jwt, userDetails.getUsername())) {
+                // ✅ Validate token with UserDetails
+                if (jwtService.validateToken(jwt, userDetails)) {
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);
+                    System.out.println("✅ Authenticated user: " + email + " with authorities: " + userDetails.getAuthorities());
                 }
             }
             filterChain.doFilter(request, response);
             
         } catch (ExpiredJwtException e) {
-            // Return 401 for expired tokens
+            System.out.println("❌ Token expired: " + e.getMessage());
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json");
             response.getWriter().write("{\"error\": \"Token expired\", \"message\": \"Please login again\", \"code\": \"TOKEN_EXPIRED\"}");
             return;
             
         } catch (MalformedJwtException | SignatureException e) {
-            // Return 401 for invalid tokens
+            System.out.println("❌ Invalid token: " + e.getMessage());
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json");
             response.getWriter().write("{\"error\": \"Invalid token\", \"message\": \"Authentication failed\"}");
             return;
             
         } catch (Exception e) {
-            // Return 401 for any other authentication errors
+            System.out.println("❌ Authentication error: " + e.getMessage());
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json");
             response.getWriter().write("{\"error\": \"Authentication failed\", \"message\": \"" + e.getMessage() + "\"}");

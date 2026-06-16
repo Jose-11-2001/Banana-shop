@@ -19,6 +19,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/auth")
 @CrossOrigin(origins = "http://localhost:3000")
@@ -85,17 +87,27 @@ public class AuthController {
         )
     })
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-        Authentication authentication = authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
-        );
-        
-        String token = jwtService.generateToken(request.getEmail());
-        User user = userService.findByEmail(request.getEmail());
-        
-        //  Add debug logging to see what role is being returned
-        System.out.println(" User logged in: " + user.getEmail() + " with role: " + user.getRole());
-        
-        return ResponseEntity.ok(new AuthResponse(token, user));
+        try {
+            System.out.println("🔐 Login attempt for: " + request.getEmail());
+            
+            Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+            );
+            
+            User user = userService.findByEmail(request.getEmail());
+            
+            // ✅ Generate token with role
+            String token = jwtService.generateToken(user.getEmail(), user.getRole().name());
+            
+            System.out.println("🔐 User logged in: " + user.getEmail() + " with role: " + user.getRole());
+            System.out.println("🎫 Token generated with role: ROLE_" + user.getRole().name());
+            
+            return ResponseEntity.ok(new AuthResponse(token, user));
+            
+        } catch (Exception e) {
+            System.out.println("❌ Login failed: " + e.getMessage());
+            return ResponseEntity.status(401).body(Map.of("error", "Invalid credentials", "message", e.getMessage()));
+        }
     }
     
     @PostMapping("/register")

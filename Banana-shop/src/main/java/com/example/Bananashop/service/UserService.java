@@ -35,7 +35,7 @@ public class UserService {
     
     public User findByEmail(String email) {
         return userRepository.findByEmail(email)
-            .orElseThrow(() -> new RuntimeException("User not found"));
+            .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
     }
     
     @Transactional
@@ -45,6 +45,7 @@ public class UserService {
         }
         
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setCreatedAt(LocalDateTime.now());
         
         // Auto-set admin role for specific email
         if (user.getEmail().equals("adminbananashop@gmail.com")) {
@@ -58,12 +59,24 @@ public class UserService {
     
     @Transactional
     public User updateProfile(String email, User updatedUser) {
+        System.out.println("📝 Updating profile for: " + email);
+        
         User user = findByEmail(email);
+        System.out.println("👤 Found user: " + user.getEmail());
+        System.out.println("   Old name: " + user.getName());
+        System.out.println("   New name: " + updatedUser.getName());
+        System.out.println("   Old location: " + user.getLocation());
+        System.out.println("   New location: " + updatedUser.getLocation());
+        
+        // ✅ Only update name and location (email should NOT be updated)
         user.setName(updatedUser.getName());
         user.setLocation(updatedUser.getLocation());
-        user.setEmail(updatedUser.getEmail());
+        // DO NOT update email - it should be immutable
         
-        return userRepository.save(user);
+        User savedUser = userRepository.save(user);
+        System.out.println("✅ Profile updated for: " + savedUser.getEmail());
+        
+        return savedUser;
     }
     
     @Transactional
@@ -100,23 +113,19 @@ public class UserService {
         return userRepository.count();
     }
     
-    // Forgot Password - Send reset email
     @Transactional
     public void forgotPassword(String email) {
         User user = userRepository.findByEmail(email)
             .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
         
-        // Generate reset token
         String resetToken = UUID.randomUUID().toString();
         user.setResetToken(resetToken);
         user.setResetTokenExpiry(LocalDateTime.now().plusHours(1));
         userRepository.save(user);
         
-        // Send email using EmailService
         emailService.sendPasswordResetEmail(user.getEmail(), resetToken);
     }
     
-    // Reset Password - Set new password
     @Transactional
     public void resetPassword(String token, String newPassword) {
         User user = userRepository.findByResetToken(token)
