@@ -40,23 +40,30 @@ public class SecurityConfig {
             .formLogin(form -> form.disable())
             .httpBasic(basic -> basic.disable())
             .authorizeHttpRequests(auth -> auth
+                // ✅ Public endpoints - allow both with and without /api
                 .requestMatchers(
+                    "/auth/**",
                     "/api/auth/**",
+                    "/products/**",
                     "/api/products/**",
-                    "/api/products",
-                    "/api/user/forgot-password",
-                    "/api/user/reset-password",
-                    "/api/notifications/**",
-                    "/ws/**",
                     "/swagger-ui/**",
                     "/swagger-ui.html",
                     "/api-docs/**",
                     "/v3/api-docs/**",
                     "/swagger-resources/**",
-                    "/webjars/**"
+                    "/webjars/**",
+                    "/ws/**"
                 ).permitAll()
+                // ✅ Order endpoints - require authentication
+                .requestMatchers("/api/orders/**").authenticated()
+                .requestMatchers("/orders/**").authenticated()
+                // ✅ Customer endpoints - require authentication
+                .requestMatchers("/api/customer/**").authenticated()
+                .requestMatchers("/customer/**").authenticated()
+                // ✅ Admin endpoints - require ADMIN role
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                .requestMatchers("/api/customer/**").hasAnyRole("CUSTOMER", "ADMIN")
+                .requestMatchers("/admin/**").hasRole("ADMIN")
+                // ✅ Any other request requires authentication
                 .anyRequest().authenticated()
             )
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

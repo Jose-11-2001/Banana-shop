@@ -95,17 +95,18 @@ public class AuthController {
             );
             
             User user = userService.findByEmail(request.getEmail());
+            System.out.println("✅ User found: " + user.getEmail() + " with role: " + user.getRole());
             
             // ✅ Generate token with role
             String token = jwtService.generateToken(user.getEmail(), user.getRole().name());
-            
-            System.out.println("🔐 User logged in: " + user.getEmail() + " with role: " + user.getRole());
-            System.out.println("🎫 Token generated with role: ROLE_" + user.getRole().name());
+            System.out.println("🎫 Token generated: " + token.substring(0, 30) + "...");
+            System.out.println("🎫 Token role: ROLE_" + user.getRole().name());
             
             return ResponseEntity.ok(new AuthResponse(token, user));
             
         } catch (Exception e) {
             System.out.println("❌ Login failed: " + e.getMessage());
+            e.printStackTrace();
             return ResponseEntity.status(401).body(Map.of("error", "Invalid credentials", "message", e.getMessage()));
         }
     }
@@ -154,11 +155,11 @@ public class AuthController {
     })
     public ResponseEntity<?> register(@RequestBody User user) {
         // Log registration
-        System.out.println(" Registering user: " + user.getEmail() + " with role: " + user.getRole());
+        System.out.println("📝 Registering user: " + user.getEmail() + " with role: " + user.getRole());
         
         User registeredUser = userService.register(user);
         
-        System.out.println(" User registered: " + registeredUser.getEmail() + " with role: " + registeredUser.getRole());
+        System.out.println("✅ User registered: " + registeredUser.getEmail() + " with role: " + registeredUser.getRole());
         
         return ResponseEntity.ok(registeredUser);
     }

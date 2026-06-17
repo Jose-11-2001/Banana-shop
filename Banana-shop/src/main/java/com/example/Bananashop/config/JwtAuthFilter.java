@@ -16,6 +16,8 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
@@ -25,41 +27,51 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     
     @Autowired
     private CustomUserDetailsService userDetailsService;
+
+    // ✅ List of public endpoints (both with and without /api)
+    private static final List<String> PUBLIC_PATHS = Arrays.asList(
+        "/auth/login",
+        "/auth/register",
+        "/api/auth/login",
+        "/api/auth/register",
+        "/auth/forgot-password",
+        "/api/auth/forgot-password",
+        "/auth/reset-password",
+        "/api/auth/reset-password",
+        "/products",
+        "/api/products",
+        "/swagger-ui",
+        "/api-docs",
+        "/v3/api-docs",
+        "/ws"
+    );
     
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         
-        final String authHeader = request.getHeader("Authorization");
-        
-        // ✅ Get the request path
         String path = request.getServletPath();
         String method = request.getMethod();
         
         System.out.println("🔍 JWT Filter - Path: " + path + ", Method: " + method);
         
-        // ✅ SKIP JWT FILTER FOR PUBLIC ENDPOINTS
-        if (path.equals("/api/auth/login") || 
-            path.equals("/api/auth/register") ||
-            path.startsWith("/api/auth/") || 
-            path.startsWith("/api/products") || 
-            path.startsWith("/swagger-ui") || 
-            path.startsWith("/api-docs") ||
-            path.startsWith("/v3/api-docs") ||
-            path.startsWith("/ws/") ||
-            path.startsWith("/api/notifications/") ||
-            path.equals("/api/user/forgot-password") ||
-            path.equals("/api/user/reset-password")) {
-            
+        // ✅ Check if path is public
+        boolean isPublic = PUBLIC_PATHS.stream().anyMatch(path::startsWith);
+        
+        if (isPublic) {
             System.out.println("🔓 Public endpoint: " + path + " - Skipping JWT filter");
             filterChain.doFilter(request, response);
             return;
         }
         
+        final String authHeader = request.getHeader("Authorization");
+        
         // ✅ Check for Authorization header
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             System.out.println("⚠️ No Bearer token found for: " + path);
-            filterChain.doFilter(request, response);
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+            response.getWriter().write("{\"error\": \"Authentication required\", \"message\": \"Missing or invalid token\"}");
             return;
         }
         
@@ -75,13 +87,14 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 System.out.println("👤 Loaded user: " + userDetails.getUsername());
                 System.out.println("👤 User authorities: " + userDetails.getAuthorities());
                 
-                // ✅ Validate token with UserDetails
-                if (jwtService.validateToken(jwt, userDetails)) {
+                if (jwtService.validateToken(jwt, userDetails.getUsername())) {
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                     System.out.println("✅ Authenticated user: " + email + " with authorities: " + userDetails.getAuthorities());
+                } else {
+                    System.out.println("❌ Token validation failed for: " + email);
                 }
             }
             filterChain.doFilter(request, response);
@@ -102,6 +115,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             
         } catch (Exception e) {
             System.out.println("❌ Authentication error: " + e.getMessage());
+            e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json");
             response.getWriter().write("{\"error\": \"Authentication failed\", \"message\": \"" + e.getMessage() + "\"}");
