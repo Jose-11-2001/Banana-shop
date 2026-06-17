@@ -54,11 +54,11 @@ public class SecurityConfig {
                     "/webjars/**",
                     "/ws/**"
                 ).permitAll()
-                // ✅ Admin endpoints - REQUIRE ADMIN ROLE
-                // All files under /admin and /api/admin require ADMIN role
-                .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                .requestMatchers("/admin/**").hasRole("ADMIN")
-                // ✅ Order endpoints - require authentication (not necessarily admin)
+                // ✅ Admin endpoints - REQUIRES ADMIN ROLE
+                // Using hasAuthority with ROLE_ prefix to match the token
+                .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN")
+                .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
+                // ✅ Order endpoints - require authentication
                 .requestMatchers("/api/orders/**").authenticated()
                 .requestMatchers("/orders/**").authenticated()
                 // ✅ Customer endpoints - require authentication
