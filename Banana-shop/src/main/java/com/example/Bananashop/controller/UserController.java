@@ -76,11 +76,20 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
     
+    // ✅ Admin - Get user stats
     @GetMapping("/admin/users/stats")
     public ResponseEntity<?> getUserStats() {
-        Map<String, Object> stats = new HashMap<>();
-        stats.put("totalUsers", userService.getTotalUsers());
-        return ResponseEntity.ok(stats);
+        System.out.println("📥 Admin fetching user stats");
+        try {
+            Map<String, Object> stats = new HashMap<>();
+            stats.put("totalUsers", userService.getTotalUsers());
+            System.out.println("✅ Total users: " + stats.get("totalUsers"));
+            return ResponseEntity.ok(stats);
+        } catch (Exception e) {
+            System.err.println("❌ Error fetching user stats: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", "Failed to fetch user stats", "message", e.getMessage()));
+        }
     }
     
     @PostMapping("/forgot-password")

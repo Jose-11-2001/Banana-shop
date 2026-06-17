@@ -40,7 +40,7 @@ public class SecurityConfig {
             .formLogin(form -> form.disable())
             .httpBasic(basic -> basic.disable())
             .authorizeHttpRequests(auth -> auth
-                // ✅ Public endpoints - allow both with and without /api
+                // ✅ Public endpoints - no authentication required
                 .requestMatchers(
                     "/auth/**",
                     "/api/auth/**",
@@ -54,15 +54,16 @@ public class SecurityConfig {
                     "/webjars/**",
                     "/ws/**"
                 ).permitAll()
-                // ✅ Order endpoints - require authentication
+                // ✅ Admin endpoints - REQUIRE ADMIN ROLE
+                // All files under /admin and /api/admin require ADMIN role
+                .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                .requestMatchers("/admin/**").hasRole("ADMIN")
+                // ✅ Order endpoints - require authentication (not necessarily admin)
                 .requestMatchers("/api/orders/**").authenticated()
                 .requestMatchers("/orders/**").authenticated()
                 // ✅ Customer endpoints - require authentication
                 .requestMatchers("/api/customer/**").authenticated()
                 .requestMatchers("/customer/**").authenticated()
-                // ✅ Admin endpoints - require ADMIN role
-                .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                .requestMatchers("/admin/**").hasRole("ADMIN")
                 // ✅ Any other request requires authentication
                 .anyRequest().authenticated()
             )

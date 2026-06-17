@@ -145,13 +145,42 @@ public class ReviewService {
         return stats;
     }
     
-    // Delete review (admin)
-    @Transactional
-    public void deleteReview(Long reviewId) {
-        Review review = reviewRepository.findById(reviewId)
-            .orElseThrow(() -> new RuntimeException("Review not found"));
+    // Count pending reviews
+    public long countPendingReviews() {
+        return reviewRepository.countByStatus(Review.ReviewStatus.PENDING);
+    }
+    
+    // ✅ Get reviews by product and status
+    public List<Review> getReviewsByProduct(Long productId) {
+        return reviewRepository.findByProductIdAndStatus(productId, Review.ReviewStatus.APPROVED);
+    }
+    
+    // ✅ Create review (alternative method)
+    public Review createReview(String email, Long productId, Review review) {
+        User customer = userRepository.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("User not found"));
         
-        reviewRepository.delete(review);
-        updateProductRating(review.getProduct());
+        Product product = productRepository.findById(productId)
+            .orElseThrow(() -> new RuntimeException("Product not found"));
+        
+        review.setCustomer(customer);
+        review.setProduct(product);
+        review.setStatus(Review.ReviewStatus.PENDING);
+        review.setCreatedAt(LocalDateTime.now());
+        
+        return reviewRepository.save(review);
+    }
+    
+    // ✅ Update review status
+    public Review updateReviewStatus(Long id, Review.ReviewStatus status) {
+        Review review = reviewRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Review not found"));
+        review.setStatus(status);
+        return reviewRepository.save(review);
+    }
+    
+    // ✅ Delete review
+    public void deleteReview(Long id) {
+        reviewRepository.deleteById(id);
     }
 }

@@ -6,13 +6,13 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
-import org.springframework.http.HttpStatus;
 
 @RestController
 @RequestMapping("/api")
@@ -50,9 +50,15 @@ public class ProductController {
     @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<List<Product>> getAllProductsAdmin() {
         System.out.println("📥 Admin fetching all products");
-        List<Product> products = productService.getAllProducts(null);
-        System.out.println("✅ Found " + products.size() + " products");
-        return ResponseEntity.ok(products);
+        try {
+            List<Product> products = productService.getAllProducts(null);
+            System.out.println("✅ Found " + products.size() + " products");
+            return ResponseEntity.ok(products);
+        } catch (Exception e) {
+            System.err.println("❌ Error fetching products: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
     
     // ✅ Admin - Create product
@@ -128,9 +134,15 @@ public class ProductController {
     @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<?> getProductStats() {
         System.out.println("📥 Admin fetching product stats");
-        Map<String, Object> stats = new HashMap<>();
-        stats.put("totalProducts", productService.getTotalProducts());
-        System.out.println("✅ Total products: " + stats.get("totalProducts"));
-        return ResponseEntity.ok(stats);
+        try {
+            Map<String, Object> stats = new HashMap<>();
+            stats.put("totalProducts", productService.getTotalProducts());
+            System.out.println("✅ Total products: " + stats.get("totalProducts"));
+            return ResponseEntity.ok(stats);
+        } catch (Exception e) {
+            System.err.println("❌ Error fetching product stats: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", "Failed to fetch product stats", "message", e.getMessage()));
+        }
     }
 }
