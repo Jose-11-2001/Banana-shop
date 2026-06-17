@@ -30,16 +30,24 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     // ✅ List of public endpoints (both with and without /api)
     private static final List<String> PUBLIC_PATHS = Arrays.asList(
+        // Auth endpoints
         "/auth/login",
         "/auth/register",
         "/api/auth/login",
         "/api/auth/register",
+        // Forgot/Reset password endpoints
         "/auth/forgot-password",
         "/api/auth/forgot-password",
+        "/user/forgot-password",
+        "/api/user/forgot-password",
         "/auth/reset-password",
         "/api/auth/reset-password",
+        "/user/reset-password",
+        "/api/user/reset-password",
+        // Product endpoints
         "/products",
         "/api/products",
+        // Swagger
         "/swagger-ui",
         "/api-docs",
         "/v3/api-docs",
@@ -65,6 +73,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
         
         final String authHeader = request.getHeader("Authorization");
+        System.out.println("🔑 Auth Header: " + (authHeader != null ? "Present" : "Missing"));
         
         // ✅ Check for Authorization header
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
@@ -77,6 +86,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         
         final String jwt = authHeader.substring(7);
         System.out.println("🔐 Validating token for: " + path);
+        System.out.println("🔐 Token: " + jwt.substring(0, 30) + "...");
         
         try {
             final String email = jwtService.extractEmail(jwt);
