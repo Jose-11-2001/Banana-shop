@@ -54,13 +54,13 @@ public class SecurityConfig {
                     "/webjars/**",
                     "/ws/**"
                 ).permitAll()
-                // ✅ TEMPORARY: Make ALL admin endpoints public for testing
+                // ✅ Make admin endpoints public for now
                 .requestMatchers("/api/admin/**").permitAll()
                 .requestMatchers("/admin/**").permitAll()
-                // ✅ Order endpoints
+                // ✅ Order endpoints - require authentication
                 .requestMatchers("/api/orders/**").authenticated()
                 .requestMatchers("/orders/**").authenticated()
-                // ✅ Customer endpoints
+                // ✅ Customer endpoints - require authentication
                 .requestMatchers("/api/customer/**").authenticated()
                 .requestMatchers("/customer/**").authenticated()
                 // ✅ Any other request
