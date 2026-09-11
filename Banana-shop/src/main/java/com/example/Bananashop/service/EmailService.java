@@ -8,7 +8,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.Context;  // ✅ Add this import
+import org.thymeleaf.context.Context;
 
 @Service
 public class EmailService {
@@ -91,7 +91,7 @@ public class EmailService {
         sendHtmlEmail(to, "Welcome to Banana Shop!", "welcome", context);
     }
     
-    // ✅ Password reset email - FIXED version
+    //  Password reset email - FIXED version
     public void sendPasswordResetEmail(String to, String resetToken) {
         String resetLink = frontendUrl + "/auth/reset-password?token=" + resetToken;
         String subject = "Reset Your Password - Banana Shop";

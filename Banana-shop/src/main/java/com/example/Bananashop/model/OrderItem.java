@@ -36,6 +36,7 @@ public class OrderItem {
         this.subtotal = this.price * this.quantity;
     }
     
+    //Getterrs and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public Order getOrder() { return order; }

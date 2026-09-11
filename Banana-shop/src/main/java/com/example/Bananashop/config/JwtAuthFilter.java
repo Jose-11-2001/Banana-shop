@@ -77,7 +77,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         
         // ✅ Check for Authorization header
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            System.out.println("⚠️ No Bearer token found for: " + path);
+            System.out.println(" No Bearer token found for: " + path);
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json");
             response.getWriter().write("{\"error\": \"Authentication required\", \"message\": \"Missing or invalid token\"}");
@@ -85,46 +85,46 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
         
         final String jwt = authHeader.substring(7);
-        System.out.println("🔐 Validating token for: " + path);
-        System.out.println("🔐 Token: " + jwt.substring(0, 30) + "...");
+        System.out.println(" Validating token for: " + path);
+        System.out.println(" Token: " + jwt.substring(0, 30) + "...");
         
         try {
             final String email = jwtService.extractEmail(jwt);
-            System.out.println("📧 Extracted email: " + email);
+            System.out.println(" Extracted email: " + email);
             
             if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(email);
-                System.out.println("👤 Loaded user: " + userDetails.getUsername());
-                System.out.println("👤 User authorities: " + userDetails.getAuthorities());
+                System.out.println(" Loaded user: " + userDetails.getUsername());
+                System.out.println(" User authorities: " + userDetails.getAuthorities());
                 
                 if (jwtService.validateToken(jwt, userDetails.getUsername())) {
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);
-                    System.out.println("✅ Authenticated user: " + email + " with authorities: " + userDetails.getAuthorities());
+                    System.out.println(" Authenticated user: " + email + " with authorities: " + userDetails.getAuthorities());
                 } else {
-                    System.out.println("❌ Token validation failed for: " + email);
+                    System.out.println(" Token validation failed for: " + email);
                 }
             }
             filterChain.doFilter(request, response);
             
         } catch (ExpiredJwtException e) {
-            System.out.println("❌ Token expired: " + e.getMessage());
+            System.out.println(" Token expired: " + e.getMessage());
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json");
             response.getWriter().write("{\"error\": \"Token expired\", \"message\": \"Please login again\", \"code\": \"TOKEN_EXPIRED\"}");
             return;
             
         } catch (MalformedJwtException | SignatureException e) {
-            System.out.println("❌ Invalid token: " + e.getMessage());
+            System.out.println(" Invalid token: " + e.getMessage());
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json");
             response.getWriter().write("{\"error\": \"Invalid token\", \"message\": \"Authentication failed\"}");
             return;
             
         } catch (Exception e) {
-            System.out.println("❌ Authentication error: " + e.getMessage());
+            System.out.println(" Authentication error: " + e.getMessage());
             e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json");

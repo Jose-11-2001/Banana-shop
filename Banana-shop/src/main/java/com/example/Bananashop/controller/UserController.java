@@ -25,12 +25,12 @@ public class UserController {
     @GetMapping("/profile")
     public ResponseEntity<?> getProfile(@AuthenticationPrincipal UserDetails userDetails) {
         try {
-            System.out.println("📥 Fetching profile for: " + userDetails.getUsername());
+            System.out.println(" Fetching profile for: " + userDetails.getUsername());
             User user = userService.findByEmail(userDetails.getUsername());
-            System.out.println("✅ Profile fetched for: " + user.getEmail());
+            System.out.println(" Profile fetched for: " + user.getEmail());
             return ResponseEntity.ok(user);
         } catch (Exception e) {
-            System.err.println("❌ Error fetching profile: " + e.getMessage());
+            System.err.println(" Error fetching profile: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(Map.of("error", "Failed to fetch profile", "message", e.getMessage()));
         }
@@ -41,16 +41,16 @@ public class UserController {
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestBody User updatedUser) {
         try {
-            System.out.println("📤 Updating profile for: " + userDetails.getUsername());
+            System.out.println(" Updating profile for: " + userDetails.getUsername());
             System.out.println("   New name: " + updatedUser.getName());
             System.out.println("   New location: " + updatedUser.getLocation());
             
-            // ✅ Don't update email - it should be read-only
+            //  Don't update email - it should be read-only
             User user = userService.updateProfile(userDetails.getUsername(), updatedUser);
-            System.out.println("✅ Profile updated for: " + user.getEmail());
+            System.out.println(" Profile updated for: " + user.getEmail());
             return ResponseEntity.ok(user);
         } catch (Exception e) {
-            System.err.println("❌ Error updating profile: " + e.getMessage());
+            System.err.println(" Error updating profile: " + e.getMessage());
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(Map.of("error", "Failed to update profile", "message", e.getMessage()));
@@ -76,17 +76,17 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
     
-    // ✅ Admin - Get user stats
+    //  Admin - Get user stats
     @GetMapping("/admin/users/stats")
     public ResponseEntity<?> getUserStats() {
-        System.out.println("📥 Admin fetching user stats");
+        System.out.println(" Admin fetching user stats");
         try {
             Map<String, Object> stats = new HashMap<>();
             stats.put("totalUsers", userService.getTotalUsers());
-            System.out.println("✅ Total users: " + stats.get("totalUsers"));
+            System.out.println(" Total users: " + stats.get("totalUsers"));
             return ResponseEntity.ok(stats);
         } catch (Exception e) {
-            System.err.println("❌ Error fetching user stats: " + e.getMessage());
+            System.err.println(" Error fetching user stats: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(Map.of("error", "Failed to fetch user stats", "message", e.getMessage()));
         }

@@ -68,10 +68,10 @@ public class JwtService {
         try {
             final String email = extractEmail(token);
             final String role = extractRole(token);
-            System.out.println("🔍 Validating token - Email: " + email + ", Role: " + role);
+            System.out.println(" Validating token - Email: " + email + ", Role: " + role);
             return email.equals(userDetails.getUsername()) && !isTokenExpired(token);
         } catch (Exception e) {
-            System.out.println("❌ Token validation error: " + e.getMessage());
+            System.out.println(" Token validation error: " + e.getMessage());
             return false;
         }
     }

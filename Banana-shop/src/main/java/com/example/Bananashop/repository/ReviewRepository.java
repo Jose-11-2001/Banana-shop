@@ -26,6 +26,6 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     
     long countByStatus(Review.ReviewStatus status);
     
-    // ✅ Add this method
+    //  Add this method
     List<Review> findByProductIdAndStatus(Long productId, Review.ReviewStatus status);
 }

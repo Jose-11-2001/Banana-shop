@@ -22,29 +22,29 @@ public class OrderController {
     @Autowired
     private OrderService orderService;
     
-    // ✅ Create new order (customer)
+    //  Create new order (customer)
     @PostMapping("/orders")
     public ResponseEntity<?> createOrder(
             Authentication authentication,
             @RequestBody OrderDTO orderDTO) {
         try {
-            // ✅ Get email from authentication
+            //  Get email from authentication
             String email = authentication.getName();
-            System.out.println("📤 Creating order for user: " + email);
+            System.out.println(" Creating order for user: " + email);
             
             Order order = orderService.createOrder(email, orderDTO);
-            System.out.println("✅ Order created with ID: " + order.getId());
+            System.out.println(" Order created with ID: " + order.getId());
             
             return ResponseEntity.ok(order);
         } catch (Exception e) {
-            System.err.println("❌ Error creating order: " + e.getMessage());
+            System.err.println(" Error creating order: " + e.getMessage());
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(Map.of("error", "Failed to create order", "message", e.getMessage()));
         }
     }
     
-    // ✅ Get customer's orders
+    //  Get customer's orders
     @GetMapping("/customer/orders")
     public ResponseEntity<List<Order>> getCustomerOrders(
             @AuthenticationPrincipal UserDetails userDetails) {
@@ -52,14 +52,14 @@ public class OrderController {
         return ResponseEntity.ok(orders);
     }
     
-    // ✅ Get order by ID
+    //  Get order by ID
     @GetMapping("/orders/{id}")
     public ResponseEntity<Order> getOrderById(@PathVariable Long id) {
         Order order = orderService.getOrderById(id);
         return ResponseEntity.ok(order);
     }
     
-    // ✅ Admin endpoints
+    //  Admin endpoints
     @GetMapping("/admin/orders")
     public ResponseEntity<List<Order>> getAllOrders() {
         return ResponseEntity.ok(orderService.getAllOrders());
