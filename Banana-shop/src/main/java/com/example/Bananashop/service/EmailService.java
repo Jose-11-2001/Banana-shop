@@ -42,7 +42,6 @@ public class EmailService {
         }
     }
     
-    // Send HTML email using template
     public void sendHtmlEmail(String to, String subject, String templateName, Context context) {
         try {
             String htmlContent = templateEngine.process(templateName, context);

@@ -28,7 +28,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         
         System.out.println(" User loaded: " + user.getEmail() + " with role: " + user.getRole());
         
-        //  Create authority with ROLE_ prefix
+        //  Create authority with ROLE_prefix
         String role = "ROLE_" + user.getRole().name();
         System.out.println(" Granted authority: " + role);
         
